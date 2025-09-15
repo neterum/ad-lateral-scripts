@@ -32,7 +32,7 @@ def encode_ps_for_e(listen_address: str, listen_port: str) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Print a PowerShell wrapper with $Command holding a base64-encoded benign snippet."
+        description="Print a PowerShell wrapper holding a base64-encoded reverse shell."
     )
     parser.add_argument("-username", required=True, help="Username for PSCredential")
     parser.add_argument("-password", required=True, help="Password for PSCredential")
