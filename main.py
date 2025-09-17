@@ -3,6 +3,7 @@ import argparse
 from textwrap import dedent
 from wmi import Wmi
 from winrs import Winrs
+from pssession import PSSession
 
 def main():
     parser = argparse.ArgumentParser(
@@ -15,6 +16,7 @@ def main():
     parser.add_argument("-listen_port", required=True, type=int, help="Port to connect back on")
     parser.add_argument("-wmi", action="store_true", help="Utilize WMI PowerShell")
     parser.add_argument("-winrs", action="store_true", help="Utilize winrs command line application")
+    parser.add_argument("-pssession", action="store_true", help="Utilize a PSSession")
 
     args = parser.parse_args()
 
@@ -31,6 +33,8 @@ def main():
         connection = Wmi
     elif args.winrs:
         connection = Winrs
+    elif args.pssession:
+        connection = PSSession
 
     print(connection.get_ps(
                 username=args.username,
