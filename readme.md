@@ -5,8 +5,8 @@ OSCP Pen 200 course instructed students on copying and pasting various PowerShel
 ### Usage
 
 ```
-$ ./main.py --help                                                                                                           
-usage: main.py [-h] -username USERNAME -password PASSWORD -target_ip TARGET_IP -listen_address LISTEN_ADDRESS -listen_port LISTEN_PORT [-wmi] [-winrs]
+python -m ad_lateral_scripts --help
+usage: __main__.py [-h] -username USERNAME -password PASSWORD -target_ip TARGET_IP -listen_address LISTEN_ADDRESS -listen_port LISTEN_PORT (-cimsession | -winrs | -pssession)
 
 Print a PowerShell wrapper holding a base64-encoded reverse shell.
 
@@ -19,6 +19,7 @@ options:
                         IP address to connect back to
   -listen_port LISTEN_PORT
                         Port to connect back on
-  -wmi                  Utilize WMI PowerShell
-  -winrs                Utilize winrs command line application
+  -cimsession           Use WMI/CIM PowerShell
+  -winrs                Use winrs CLI
+  -pssession            Use PowerShell Remoting (PSSession)
 ```
