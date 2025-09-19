@@ -6,9 +6,7 @@ OSCP Pen 200 course instructed students on copying and pasting various PowerShel
 
 ```
 python -m venv .venv && source ./.venv/bin/activate
-python -m ad_lateral_scripts --help
 pip install -e .[dev]
-
 ```
 
 ### Usage
