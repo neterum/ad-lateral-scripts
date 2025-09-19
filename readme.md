@@ -2,11 +2,19 @@
 
 OSCP Pen 200 course instructed students on copying and pasting various PowerShell commands to create a reverse shell with a Common Information Model.  Users had to manually adjust code for IP addresses, ports, usernames, and passwords.  Scripts in this repository will instead take in dynamic information as arguments and print out usable PowerShell that can be pasted into target's PowerShell command prompt. Users must specific a ```-cimsession```, ```-pssession```, or ```-winrs``` flag to specify the connection method.
 
-### Usage
+### Project Setup
 
 ```
 python -m venv .venv && source ./.venv/bin/activate
 python -m ad_lateral_scripts --help
+pip install -e .[dev]
+
+```
+
+### Usage
+
+```
+
 usage: __main__.py [-h] -username USERNAME -password PASSWORD -target_ip TARGET_IP -listen_address LISTEN_ADDRESS -listen_port LISTEN_PORT (-cimsession | -winrs | -pssession)
 
 Print a PowerShell wrapper holding a base64-encoded reverse shell.
