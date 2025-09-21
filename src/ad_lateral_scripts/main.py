@@ -4,6 +4,7 @@ from textwrap import dedent
 from ad_lateral_scripts.cimsession import CimSession
 from ad_lateral_scripts.winrs import Winrs
 from ad_lateral_scripts.pssession import PSSession
+from ad_lateral_scripts.dcom import Dcom
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -19,6 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     group.add_argument("-cimsession", action="store_true", help="Use WMI/CIM PowerShell")
     group.add_argument("-winrs", action="store_true", help="Use winrs CLI")
     group.add_argument("-pssession", action="store_true", help="Use PowerShell Remoting (PSSession)")
+    group.add_argument("-dcom", action="store_true", help="Utilize DCOM for a reverse shell")
 
     return parser
 
@@ -32,6 +34,8 @@ def main(argv: list[str]| None = None) -> int:
         connection = Winrs
     elif args.pssession:
         connection = PSSession
+    elif args.dcom:
+        connection = Dcom
 
     print(connection.get_ps(
                 username=args.username,
